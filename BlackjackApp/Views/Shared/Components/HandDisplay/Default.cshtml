@@ -5,11 +5,11 @@
     {
         if(i == 0 && Model.HiddenCard) //If first card and dealer we will show the back
         {
-            <img src="~/images/back.png"/>
+            <img src="~/images/back.png" height="225" width="150"/>
         } 
         else //Otherwise show card
         {
-            <img src="~/images/@(Model.GetCard(i).Name).png" />
+            <img src="~/images/@(Model.GetCard(i).Name).png" height="225" width="150"/>
         }
     }
 </div>

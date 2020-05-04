@@ -11,6 +11,7 @@ namespace BlackjackApp.Models
         public string Rank { get; set; }
         public string Suit { get; set; }
 
+        [JsonIgnore]
         public int Value
         {
             get

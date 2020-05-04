@@ -7,15 +7,15 @@ namespace BlackjackApp.TagHelpers
 {
     public class ActionTagHelper : TagHelper
     {
-        private LinkGenerator linkGen;
+        private readonly LinkGenerator linkGen;
         public ActionTagHelper(LinkGenerator l) => linkGen = l;
 
         [ViewContext]
         [HtmlAttributeNotBound]
         public ViewContext VC { get; set; }
 
-        public string action { get; set; }
-        public bool isDisabled { get; set; }
+        public string Action { get; set; }
+        public bool IsDisabled { get; set; }
 
 
         //Creates form for buttons
@@ -25,7 +25,7 @@ namespace BlackjackApp.TagHelpers
             output.TagMode = TagMode.StartTagAndEndTag;
 
             string control = VC.RouteData.Values["controller"].ToString();
-            string url = linkGen.GetPathByAction(action, control);
+            string url = linkGen.GetPathByAction(Action, control);
 
             output.Attributes.SetAttribute("action", url);
             output.Attributes.SetAttribute("method", "post");
@@ -34,9 +34,9 @@ namespace BlackjackApp.TagHelpers
             TagBuilder button = new TagBuilder("button");
             button.Attributes.Add("type", "submit");
             button.Attributes.Add("class", "btn btn-primary"); //Style
-            button.InnerHtml.Append(action);
+            button.InnerHtml.Append(Action);
 
-            if (isDisabled) { button.Attributes.Add("disabled", "disabled"); } //Disable if needed
+            if (IsDisabled) { button.Attributes.Add("disabled", "disabled"); } //Disable if needed
 
             output.Content.AppendHtml(button);
         }

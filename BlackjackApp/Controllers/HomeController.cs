@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc;
 using BlackjackApp.Models;
+using System;
 
 namespace BlackjackApp.Controllers
 {
     public class HomeController : Controller
     {
         private GameInterface game { get; set; }
-        public HomeController(GameInterface gi) => game = gi;
+        public HomeController(GameInterface gi)
+        {
+            game = gi;
+        }
 
         public ViewResult Index() => View(game);
 
@@ -67,11 +65,11 @@ namespace BlackjackApp.Controllers
 
             if (result == Game.Result.Shuffling)
             {
-                TempData["msg"] = "Shuffling the deck, please press hit to continue.";
+                TempData["msg"] = "Shuffling the deck, please press stand to continue.";
             }
             else if (result == Game.Result.Continue)
             {
-                //TODO
+                TempData["msg"] = "Dealer needs another card, please press stand to continue.";
             }
             else if (result == Game.Result.DealerBust)
             {

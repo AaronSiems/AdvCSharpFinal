@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BlackjackApp.Models
 {
     public class Game : GameInterface
     {
-        private ISession session { get; set; }
-        public Deck deck { get; set; }
+        private ISession Session { get; set; }
+        public Deck Deck { get; set; }
         public Player player { get; set; }
         public Dealer dealer { get; set; }
         public bool NeedsDeal { get; set; }
@@ -23,29 +20,30 @@ namespace BlackjackApp.Models
         public Game(IHttpContextAccessor accessor)
         {
             //Get our session data or create new ones if not exist. Default NeedsDeal to true
-            session = accessor.HttpContext.Session;
-            deck = session.GetObject<Deck>("deck") ?? new Deck();
-            player = session.GetObject<Player>("player") ?? new Player();
-            dealer = session.GetObject<Dealer>("dealer") ?? new Dealer();
-            NeedsDeal = Convert.ToBoolean(session.GetInt32("needsdeal") ?? 1);
+            Session = accessor.HttpContext.Session;
+            Deck = Session.GetObject<Deck>("Deck") ?? new Deck();
+            player = Session.GetObject<Player>("Player") ?? new Player();
+            dealer = Session.GetObject<Dealer>("Dealer") ?? new Dealer();
+            NeedsDeal = Convert.ToBoolean(Session.GetInt32("needsdeal") ?? 1);
+            
         }
 
         public Result Deal()
         {
             var result = Result.Continue;
 
-            if(deck.cards == null) { deck.NewDeck(); } //New game - create new deck
+            if(Deck.cards == null) { Deck.NewDeck(); } //New game - create new deck
 
             //If less than 4 cards left we will make new deck otherwise deal the cards
-            if(deck.cards.Count < 4)
+            if(Deck.cards.Count < 4)
             {
-                deck.NewDeck();
+                Deck.NewDeck();
                 dealer.ShowCard();
                 result = Result.Shuffling;
             } else
             {
-                player.NewHand(deck.Deal(), deck.Deal());
-                dealer.NewHand(deck.Deal(), deck.Deal());
+                player.NewHand(Deck.Deal(), Deck.Deal());
+                dealer.NewHand(Deck.Deal(), Deck.Deal());
                 dealer.hand.HiddenCard = true;
                 NeedsDeal = false;
             }
@@ -81,7 +79,7 @@ namespace BlackjackApp.Models
 
             if (shuffle)
             {
-                deck.NewDeck();
+                Deck.NewDeck();
                 result = Result.Shuffling;
             } else if(player.hand.IsBusted) {
                 Update();
@@ -102,7 +100,7 @@ namespace BlackjackApp.Models
                 bool shuffle = HitDealer();
                 if (shuffle)
                 {
-                    deck.NewDeck();
+                    Deck.NewDeck();
                     result = Result.Shuffling;
                 }
                 else if (dealer.hand.IsBusted)
@@ -143,25 +141,25 @@ namespace BlackjackApp.Models
         private bool HitPlayer()
         {
             bool needsShuffle = false;
-            if(deck.cards.Count == 0)
+            if(Deck.cards.Count == 0)
             {
                 needsShuffle = true;
             } else
             {
-                player.Hit(deck.Deal());
+                player.Hit(Deck.Deal());
             }
             return needsShuffle;
         }
         private bool HitDealer()
         {
             bool needsShuffle = false;
-            if (deck.cards.Count == 0)
+            if (Deck.cards.Count == 0)
             {
                 needsShuffle = true;
             }
             else
             {
-                dealer.Hit(deck.Deal());
+                dealer.Hit(Deck.Deal());
             }
             return needsShuffle;
         }
@@ -180,10 +178,10 @@ namespace BlackjackApp.Models
 
         private void Save()
         {
-            session.SetObject<Deck>("deck", deck);
-            session.SetObject<Player>("player", player);
-            session.SetObject<Dealer>("dealer", dealer);
-            session.SetInt32("needsdeal", Convert.ToInt32(NeedsDeal));
+            Session.SetObject<Deck>("Deck", Deck);
+            Session.SetObject<Player>("Player", player);
+            Session.SetObject<Dealer>("Dealer", dealer);
+            Session.SetInt32("needsdeal", Convert.ToInt32(NeedsDeal));
         }
     }
 }

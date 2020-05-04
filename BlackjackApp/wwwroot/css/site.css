@@ -71,12 +71,3 @@ body {
 }
 
 
-/*CUSTOM CSS
-==========================
-*/
-
-/*For card images*/
-.hand img{
-    height: 125px;
-    width: auto;
-}
