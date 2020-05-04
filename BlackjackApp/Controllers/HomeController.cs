@@ -11,27 +11,92 @@ namespace BlackjackApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private GameInterface game { get; set; }
+        public HomeController(GameInterface gi)
         {
-            _logger = logger;
+            game = gi;
         }
 
-        public IActionResult Index()
+
+        public ViewResult Index()
         {
-            return View();
+            return View(game);
         }
 
-        public IActionResult Privacy()
+        //Deal was ran - return if any blackjacks occured or shuffling needed.
+        public RedirectToActionResult Deal()
         {
-            return View();
+            var result = game.Deal();
+
+            if(result == Game.Result.Shuffling)
+            {
+                TempData["msg"] = "Shuffling the deck, please press deal to continue.";
+            } 
+            else if(result == Game.Result.PlayerBlackJack)
+            {
+                TempData["msg"] = "You got a blackjack! You win!";
+            }
+            else if (result == Game.Result.DealerBlackJack)
+            {
+                TempData["msg"] = "Dealer got a blackjack, you lose.";
+            }
+            else if (result == Game.Result.DoubleBlackJack)
+            {
+                TempData["msg"] = "";
+            }
+
+            return RedirectToAction("Index");
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        //Hit was run - return if shuffling was needed or if player bust
+        public RedirectToActionResult Hit()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var result = game.Hit();
+
+            if(result == Game.Result.Shuffling)
+            {
+                TempData["msg"] = "Shuffling the deck, please press hit to continue.";
+            }
+            else if (result == Game.Result.PlayerBust)
+            {
+                TempData["msg"] = "You went over and lost.";
+            }
+
+            return RedirectToAction("Index");
         }
+
+        //Stand was run - return if shuffling was needed or the winner.
+        public RedirectToActionResult Stand()
+        {
+            var result = game.Stand();
+
+            if (result == Game.Result.Shuffling)
+            {
+                TempData["msg"] = "Shuffling the deck, please press hit to continue.";
+            }
+            else if (result == Game.Result.Continue)
+            {
+                //TODO
+            }
+            else if (result == Game.Result.DealerBust)
+            {
+                TempData["msg"] = "Dealer went over, you win!";
+            }
+            else if (result == Game.Result.DealerWin)
+            {
+                TempData["msg"] = "You lost.";
+            }
+            else if (result == Game.Result.PlayerWin)
+            {
+                TempData["msg"] = "You won!";
+            }
+            else if (result == Game.Result.Push)
+            {
+                TempData["msg"] = "";
+            }
+
+            return RedirectToAction("Index");
+        }
+
     }
 }

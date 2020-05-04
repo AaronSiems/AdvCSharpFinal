@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BlackjackApp.Models
 {
-    interface GameInterface
+    public interface GameInterface
     {
         Player player { get; set; }
         Dealer dealer { get; set; }
