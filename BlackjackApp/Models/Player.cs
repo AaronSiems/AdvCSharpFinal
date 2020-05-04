@@ -8,6 +8,7 @@ namespace BlackjackApp.Models
     public class Player
     {
         public Hand hand { get; set; }
+        public int winnings { get; set; }
 
         public Player()
         {

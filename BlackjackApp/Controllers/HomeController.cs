@@ -12,16 +12,11 @@ namespace BlackjackApp.Controllers
     public class HomeController : Controller
     {
         private GameInterface game { get; set; }
-        public HomeController(GameInterface gi)
-        {
-            game = gi;
-        }
+        public HomeController(GameInterface gi) => game = gi;
+
+        public ViewResult Index() => View(game);
 
 
-        public ViewResult Index()
-        {
-            return View(game);
-        }
 
         //Deal was ran - return if any blackjacks occured or shuffling needed.
         public RedirectToActionResult Deal()

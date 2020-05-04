@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,6 +30,9 @@ namespace BlackjackApp.Models
             }
         }
 
+        [JsonIgnore]
         public bool IsAce => Rank == "A"; //Use for hand calculations in other classes
+        [JsonIgnore]
+        public string Name => $"{Rank}{Suit}";
     }
 }

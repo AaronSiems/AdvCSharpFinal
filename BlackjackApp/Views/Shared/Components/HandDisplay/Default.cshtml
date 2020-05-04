@@ -1,0 +1,16 @@
+﻿@model Hand
+
+<div class="hand mb-4">
+    @for(int i = 0; i < Model.Count; i++)
+    {
+        if(i == 0 && Model.HiddenCard) //If first card and dealer we will show the back
+        {
+            <img src="~/images/back.png"/>
+        } 
+        else //Otherwise show card
+        {
+            <img src="~/images/@(Model.GetCard(i).Name).png" />
+        }
+    }
+</div>
+

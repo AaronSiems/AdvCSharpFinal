@@ -40,11 +40,13 @@ namespace BlackjackApp.Models
             if(deck.cards.Count < 4)
             {
                 deck.NewDeck();
+                dealer.ShowCard();
                 result = Result.Shuffling;
             } else
             {
                 player.NewHand(deck.Deal(), deck.Deal());
                 dealer.NewHand(deck.Deal(), deck.Deal());
+                dealer.hand.HiddenCard = true;
                 NeedsDeal = false;
             }
 
@@ -52,6 +54,7 @@ namespace BlackjackApp.Models
             if(player.hand.HasBlackJack && dealer.hand.HasBlackJack)
             {
                 Update();
+                dealer.ShowCard();
                 result = Result.DoubleBlackJack;
             } else if (player.hand.HasBlackJack)
             {
@@ -60,6 +63,7 @@ namespace BlackjackApp.Models
             } else if (dealer.hand.HasBlackJack)
             {
                 Update();
+                dealer.ShowCard();
                 result = Result.DealerBlackJack;
             }
 
@@ -81,6 +85,7 @@ namespace BlackjackApp.Models
                 result = Result.Shuffling;
             } else if(player.hand.IsBusted) {
                 Update();
+                dealer.ShowCard();
                 result = Result.PlayerBust;
             }
             Save();
@@ -89,7 +94,41 @@ namespace BlackjackApp.Models
 
         public Result Stand()
         {
+            dealer.ShowCard();
             var result = Result.Continue;
+
+            if (dealer.ShouldHit)
+            {
+                bool shuffle = HitDealer();
+                if (shuffle)
+                {
+                    deck.NewDeck();
+                    result = Result.Shuffling;
+                }
+                else if (dealer.hand.IsBusted)
+                {
+                    Update();
+                    Save();
+                    result = Result.DealerBust;
+                }
+            }
+
+            if (dealer.ShouldHit)
+            {
+
+            } else if (IsDealerHandHigher)
+            {
+                Update();
+                result = Result.DealerWin;
+            } else if (IsPlayerHandHigher)
+            {
+                Update();
+                result = Result.PlayerWin;
+            } else if (IsPush)
+            {
+                Update();
+                result = Result.Push;
+            }
 
             Save();
             return result;
@@ -97,6 +136,7 @@ namespace BlackjackApp.Models
 
         private bool IsDealerHandHigher => player.hand.Value < dealer.hand.Value;
         private bool IsPlayerHandHigher => player.hand.Value > dealer.hand.Value;
+        private bool IsPush => player.hand.Value == dealer.hand.Value;
 
         //Hit player and dealer check for empty deck and if not hit respected party
         //Return true if shuffle is needed

@@ -1,0 +1,25 @@
+﻿@model Game
+@{
+    ViewData["Title"] = "Blackjack game";
+}
+
+<h3 my-dealer="@Model.dealer"></h3>
+<vc:hand-display hand="@Model.dealer.hand"></vc:hand-display>
+
+<h3 my-player="@Model.player"></h3>
+<vc:hand-display hand="@Model.player.hand"></vc:hand-display>
+
+
+<div class="row mb-2">
+    <div class="col-2">
+        <action action="Deal" is-disabled="@(!Model.NeedsDeal)" />
+    </div>
+    <div class="col-2">
+        <action action="Hit" is-disabled="@(Model.NeedsDeal)" />
+    </div>
+    <div class="col-2">
+        <action action="Stand" is-disabled="@(Model.NeedsDeal)" />
+    </div>
+</div>
+
+<h1></h1>

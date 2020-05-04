@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace BlackjackApp.Models
@@ -9,7 +9,11 @@ namespace BlackjackApp.Models
     public class Hand
     {
         private List<Card> cards { get; set; }
-
+        public bool HiddenCard { get; set; }
+        public Card GetCard(int i) //HandDisplay
+        {
+            return cards[i];
+        }
 
         public Hand()
         {
@@ -40,7 +44,13 @@ namespace BlackjackApp.Models
         }
 
         [JsonIgnore]
+        public int Count => cards.Count; //HandDisplay
+        [JsonIgnore]
+        public bool HasCards => cards.Count > 0;
+        [JsonIgnore]
         public bool HasBlackJack => cards.Count == 2 && Value == 21;
+        [JsonIgnore]
+        public bool HasAce => cards.FirstOrDefault(c => c.IsAce) != null;
         [JsonIgnore]
         public bool IsBusted => Value > 21;
     }

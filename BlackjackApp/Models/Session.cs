@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BlackjackApp.Models
 {
-    public static class SessionHelper
+    public static class SessionExtensions
     {
         public static T GetObject<T>(this ISession session, string key)
         {
