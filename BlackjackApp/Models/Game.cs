@@ -57,6 +57,7 @@ namespace BlackjackApp.Models
             } else if (player.hand.HasBlackJack)
             {
                 Update();
+                dealer.ShowCard();
                 result = Result.PlayerBlackJack;
             } else if (dealer.hand.HasBlackJack)
             {
@@ -95,6 +96,7 @@ namespace BlackjackApp.Models
             dealer.ShowCard();
             var result = Result.Continue;
 
+            //Hit the dealer
             if (dealer.ShouldHit)
             {
                 bool shuffle = HitDealer();
@@ -111,10 +113,11 @@ namespace BlackjackApp.Models
                 }
             }
 
+            //If he needs another hit we will just continue
             if (dealer.ShouldHit)
             {
 
-            } else if (IsDealerHandHigher)
+            } else if (IsDealerHandHigher) //Dealer doesn't need hit so decide who won
             {
                 Update();
                 result = Result.DealerWin;
@@ -135,6 +138,8 @@ namespace BlackjackApp.Models
         private bool IsDealerHandHigher => player.hand.Value < dealer.hand.Value;
         private bool IsPlayerHandHigher => player.hand.Value > dealer.hand.Value;
         private bool IsPush => player.hand.Value == dealer.hand.Value;
+        private double Bet => 25; //Config values?
+        private double Multiplier => 2; //I don't know what common blackjack bets are so just gonna do double
 
         //Hit player and dealer check for empty deck and if not hit respected party
         //Return true if shuffle is needed
@@ -166,13 +171,19 @@ namespace BlackjackApp.Models
         private void Update()
         {
             //Check for a win or loss
-            if(dealer.hand.IsBusted || (IsPlayerHandHigher && !player.hand.IsBusted))
+            if (dealer.hand.IsBusted)
             {
-                //Player won, add to winnings logic here TODO
+                player.winnings += (Bet * Multiplier) / 2; //I can't figure out why dealer busting makes Update call twice but
+                                                           //it does so the player win condition is split into two since player
+                                                           //hand being higher doesnt call Update twice
+            } else if (IsPlayerHandHigher && !player.hand.IsBusted)
+            {
+                player.winnings += (Bet * Multiplier);
             } else if(player.hand.IsBusted || (IsDealerHandHigher && !dealer.hand.IsBusted))
             {
-                //Player lost, remove from winnings logic here TODO
+                player.winnings -= Bet;
             }
+            //Push needs no logic since we dont remove the bet unless they lose.
             NeedsDeal = true; //If conditions are met we will make a new game otherwise, new deal
         }
 
