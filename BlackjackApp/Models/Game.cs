@@ -96,45 +96,52 @@ namespace BlackjackApp.Models
             dealer.ShowCard();
             var result = Result.Continue;
 
-            //Hit the dealer
-            if (dealer.ShouldHit)
-            {
-                bool shuffle = HitDealer();
-                if (shuffle)
-                {
-                    Deck.NewDeck();
-                    result = Result.Shuffling;
-                }
-                else if (dealer.hand.IsBusted)
-                {
-                    Update();
-                    Save();
-                    result = Result.DealerBust;
-                }
-            }
-
-            //If he needs another hit we will just continue
-            if (dealer.ShouldHit)
-            {
-
-            } else if (IsDealerHandHigher) //Dealer doesn't need hit so decide who won
+            if (IsDealerHandHigher) //See if dealer even needs a hit.
             {
                 Update();
                 result = Result.DealerWin;
-            } else if (IsPlayerHandHigher)
+            }
+            else //See if dealer should hit
             {
-                Update();
-                result = Result.PlayerWin;
-            } else if (IsPush)
-            {
-                Update();
-                result = Result.Push;
+                if (dealer.ShouldHit) //Should hit = yes
+                {
+                    bool shuffle = HitDealer(); //Try to hit and determine if needs shuffle
+                    if (shuffle)
+                    {
+                        Deck.NewDeck();
+                        result = Result.Shuffling;
+                    }
+                    else if (dealer.hand.IsBusted) //If no shuffle check for a bust
+                    {
+                        Update();
+                        result = Result.DealerBust;
+                    }
+                }
+
+                if (dealer.ShouldHit) //If we didn't bust check for hitting again
+                {
+                    //Continue
+                }
+                else if (IsDealerHandHigher && !dealer.hand.IsBusted) //We aren't hitting again, check the win condition
+                {
+                    Update();
+                    result = Result.DealerWin;
+                }
+                else if (IsPlayerHandHigher)
+                {
+                    Update();
+                    result = Result.PlayerWin;
+                }
+                else if (IsPush)
+                {
+                    Update();
+                    result = Result.Push;
+                }
             }
 
             Save();
             return result;
         }
-
         private bool IsDealerHandHigher => player.hand.Value < dealer.hand.Value;
         private bool IsPlayerHandHigher => player.hand.Value > dealer.hand.Value;
         private bool IsPush => player.hand.Value == dealer.hand.Value;
@@ -171,15 +178,11 @@ namespace BlackjackApp.Models
         private void Update()
         {
             //Check for a win or loss
-            if (dealer.hand.IsBusted)
-            {
-                player.winnings += (Bet * Multiplier) / 2; //I can't figure out why dealer busting makes Update call twice but
-                                                           //it does so the player win condition is split into two since player
-                                                           //hand being higher doesnt call Update twice
-            } else if (IsPlayerHandHigher && !player.hand.IsBusted)
+            if (dealer.hand.IsBusted || (IsPlayerHandHigher && !player.hand.IsBusted))
             {
                 player.winnings += (Bet * Multiplier);
-            } else if(player.hand.IsBusted || (IsDealerHandHigher && !dealer.hand.IsBusted))
+            }
+            else if (player.hand.IsBusted || (IsDealerHandHigher && !dealer.hand.IsBusted))
             {
                 player.winnings -= Bet;
             }
