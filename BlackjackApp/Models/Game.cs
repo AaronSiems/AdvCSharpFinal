@@ -91,7 +91,7 @@ namespace BlackjackApp.Models
             return result;
         }
 
-    public Result Stand()
+        public Result Stand()
         {
             dealer.ShowCard();
             var result = Result.Continue;
@@ -168,7 +168,7 @@ namespace BlackjackApp.Models
             }
             return needsShuffle;
         }
-     private void Update()
+        private void Update()
         {
             //Check for a win or loss
             if (dealer.hand.IsBusted)
@@ -186,7 +186,7 @@ namespace BlackjackApp.Models
             //Push needs no logic since we dont remove the bet unless they lose.
             NeedsDeal = true; //If conditions are met we will make a new game otherwise, new deal
         }
-		
+
         private void Save()
         {
             Session.SetObject<Deck>("Deck", Deck);
